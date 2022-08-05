@@ -1,0 +1,26 @@
+- name: Update system
+  apt: 
+    name: "*"
+    state: latest
+    update_cache: yes 
+    force_apt_get: yes
+
+- name: Set a hostname machine
+  hostname: 
+    name: "{{ hostname }}"
+
+- name: Install Chrony
+  apt:
+    name: chrony
+    state: latest 
+    update_cache: yes
+
+- name: Configure Time Date
+  shell:  | 
+    timedatectl set-timezone {{ timezone }} 
+
+- name: Started and Enabled Chronyd 
+  service: 
+    name: chrony 
+    enabled: true 
+    state: restarted

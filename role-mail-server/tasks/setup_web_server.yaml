@@ -1,0 +1,48 @@
+- name: Install NGINX 
+  apt: 
+    name: nginx 
+    state: latest 
+    update_cache: yes 
+
+- name: Started and Enabled NGINX 
+  service: 
+    name: nginx 
+    enabled: true 
+    state: started 
+  
+- name: Install PHP and PHP-FPM 
+  apt: 
+    name: "{{ packages_php }}"
+    state: latest 
+    update_cache: yes 
+
+- name: Settings NGINX 
+  copy:
+    src: default
+    dest: "{{ nginx_default }}"
+
+- name: Started and Enabled PHP-FPM 
+  service: 
+    name: php7.4-fpm
+    enabled: true 
+    state: restarted 
+    
+- name: Restarted NGINX 
+  service: 
+    name: nginx 
+    state: restarted
+
+- name: Install MariaDB 
+  apt: 
+    name: "{{ packages_mariadb }}"
+    state: latest 
+    update_cache: yes 
+
+- name: Started and Enabled MariaDB
+  service: 
+    name: mariadb 
+    enabled: true 
+    state: started 
+
+- name: Configure root password for  MariaDB
+  command: mysqladmin -u root password {{ root_pass }}

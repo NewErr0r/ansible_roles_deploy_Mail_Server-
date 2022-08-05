@@ -1,0 +1,9 @@
+---
+- name: System preparation
+  include_tasks: preparation.yaml
+
+- name: Web Server Setup NGINX + PHP + MariaDB
+  include_tasks: setup_web_server.yaml
+
+- name: Installing and configuring PostfixAdmin
+  include_tasks: deploy_postfixadmin.yaml

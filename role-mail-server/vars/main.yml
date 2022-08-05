@@ -1,0 +1,19 @@
+---
+packages_php:
+  - php 
+  - php-fpm
+
+nginx_default: /etc/nginx/sites-enabled/default
+
+packages_mariadb: 
+  - mariadb-server 
+  - python3-pymysql
+
+components_php:
+  - php-mysql 
+  - php-mbstring 
+  - php-imap
+
+path_postfixadmin: /var/www/html/postfixadmin
+
+config_local_php: /var/www/html/postfixadmin/config.local.php

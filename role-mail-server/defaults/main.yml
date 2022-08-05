@@ -1,0 +1,9 @@
+---
+hostname: "relay.test.local"    # Задаем правильное имя серверу — это важный шаг, так как большинство антиспам систем выполняют проверки, обращаясь к серверу по имени в ожидании ответа
+timezone: "Europe/Moscow"
+
+#### MariaDB ####
+root_pass: "P@ssw0rd"
+name_database: "postfix"
+user_database: "postfix"
+pass_user_database: "P@ssw0rd"

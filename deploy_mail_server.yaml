@@ -1,0 +1,7 @@
+---
+- name: Large mail server on Debian
+  hosts: all
+  become: true 
+
+  roles:
+    - role-mail-server

@@ -1,0 +1,68 @@
+- name: Installing additional components for PHP
+  apt: 
+    name: "{{ components_php }}"
+    state: latest 
+    update_cache: yes 
+
+- name: Restarted PHP-FPM 
+  service: 
+    name: php7.4-fpm
+    state: restarted 
+
+- name: Creating a directory for postfixadmin
+  file: 
+    path: "{{ path_postfixadmin }}"
+    state: directory
+    recurse: yes 
+
+- name: Download PostfixAdmin
+  copy: 
+    src: postfixadmin.tar.gz
+    dest: "{{ path_postfixadmin }}"
+
+#- name: Unarchive a file that is already on the remote machine
+#  shell:  | 
+#    tar -C /var/www/html/postfixadmin -xvf {{ path_postfixadmin }}/postfixadmin.tar.gz --strip-components 1
+    
+
+- name: Creating the templates_c directory inside the portal folder
+  file: 
+    path: "{{ path_postfixadmin }}/templates_c"
+    state: directory
+    recurse: yes 
+
+- name: Setting the rights to the directory
+  file:
+    path: "{{ path_postfixadmin }}"
+    state: directory
+    recurse: yes 
+    owner: www-data
+    group: www-data
+
+- name: Creating a postfix database
+  community.mysql.mysql_db:
+    name: "{{ name_database }}"
+    encoding: utf8
+    collation: utf8_bin
+    state: present
+    login_user: root 
+    login_password: "{{ root_pass }}"
+
+- name: Create User for postfix DataBase 
+  community.mysql.mysql_user:
+    name: "{{ user_database }}"
+    password: "{{ pass_user_database }}"
+    priv: '*.*:ALL,GRANT'
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ root_pass }}"
+
+- name: Creating a postfixadmin configuration file
+  template: 
+    src: config.local.php.j2
+    dest: "{{ config_local_php }}"
+
+- debug:
+    msg:
+      - "open the browser 'http://{{ ansible_ssh_host }}/postfixadmin/public/setup.php' "
