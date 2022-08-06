@@ -1,0 +1,71 @@
+- name: Install Postfix
+  apt: 
+    name: "{{ packages_postfix }}"
+    state: latest
+    update_cache: yes 
+
+- name: Creating a "vmail" group and guid 1024
+  group:
+    name: vmail
+    state: present
+    gid: 1024
+
+- name: Create a directory "mail"
+  file:
+    path: /home/mail
+    state: directory
+    
+- name: Creating a "vmail" user
+  user:
+    name: vmail
+    comment: user for mail 
+    uid: 1024
+    group: vmail
+
+- name: Set as the owner of our created user
+  file: 
+    path: /home/mail
+    state: directory
+    owner: vmail
+    group: vmail
+
+- name: Editing the mail server configuration file "main.cf"
+  copy:
+    src: main.cf
+    dest: "{{ path_main_cf }}"
+
+- name: Creating a file with the settings for accessing the database with aliases
+  template: 
+    src: mysql_virtual_alias_maps.cf.j2
+    dest: "{{ mysql_virtual_alias_maps_cf }}"
+
+- name: Creating a file with instructions for obtaining data on virtual domains
+  template:
+    src: mysql_virtual_domains_maps.cf.j2
+    dest: "{{ mysql_virtual_domains_maps_cf }}"
+
+- name: Creating a file with mailboxes
+  template:
+    src: mysql_virtual_mailbox_maps.cf.j2
+    dest: "{{ mysql_virtual_mailbox_maps_cf }}"
+
+- name: Editing a file "master.cf"
+  copy:
+    src: master.cf
+    dest: "{{ path_master_cf }}"
+
+- name: Create a directory for certificates
+  file: 
+    path: /etc/ssl/mail
+    state: directory
+    recurse: yes
+
+- name: Generating certificates
+  shell: |
+    openssl req -new -x509 -days 1461 -nodes -out /etc/ssl/mail/public.pem -keyout /etc/ssl/mail/private.key -subj "/C=RU/ST=SPb/L=SPb/O=Global Security/OU=IT Department/CN={{ hostname }}"
+
+- name: Started and Enabled postfix 
+  service:
+    name: postfix
+    enabled: true
+    state: restarted

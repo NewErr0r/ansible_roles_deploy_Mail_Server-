@@ -20,9 +20,9 @@
     src: postfixadmin.tar.gz
     dest: "{{ path_postfixadmin }}"
 
-#- name: Unarchive a file that is already on the remote machine
-#  shell:  | 
-#    tar -C /var/www/html/postfixadmin -xvf {{ path_postfixadmin }}/postfixadmin.tar.gz --strip-components 1
+- name: Unarchive a file that is already on the remote machine
+  shell:  | 
+    tar -C /var/www/html/postfixadmin -xvf {{ path_postfixadmin }}/postfixadmin.tar.gz --strip-components 1
     
 
 - name: Creating the templates_c directory inside the portal folder

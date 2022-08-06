@@ -1,2 +1,16 @@
 ---
-# handlers file for role-mail-server
+- name: Restart Dovecot
+  service: 
+    name: dovecot
+    enabled: true 
+    state: restarted
+
+- name: Restart PHP-FPM
+  service: 
+    name: php7.4-fpm
+    state: restarted
+
+- name: Restart NGINX
+  service: 
+    name: nginx
+    state: restarted    

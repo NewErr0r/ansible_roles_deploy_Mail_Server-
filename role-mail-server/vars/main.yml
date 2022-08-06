@@ -17,3 +17,44 @@ components_php:
 path_postfixadmin: /var/www/html/postfixadmin
 
 config_local_php: /var/www/html/postfixadmin/config.local.php
+
+packages_postfix: 
+  - postfix 
+  - postfix-mysql
+
+path_main_cf: /etc/postfix/main.cf
+mysql_virtual_alias_maps_cf: /etc/postfix/mysql_virtual_alias_maps.cf
+mysql_virtual_domains_maps_cf: /etc/postfix/mysql_virtual_domains_maps.cf
+mysql_virtual_mailbox_maps_cf: /etc/postfix/mysql_virtual_mailbox_maps.cf
+path_master_cf: /etc/postfix/master.cf
+
+packages_dovecot:
+  - dovecot-imapd 
+  - dovecot-pop3d 
+  - dovecot-mysql
+
+mail_conf: /etc/dovecot/conf.d/10-mail.conf
+master_conf: /etc/dovecot/conf.d/10-master.conf
+auth_conf: /etc/dovecot/conf.d/10-auth.conf
+ssl_conf: /etc/dovecot/conf.d/10-ssl.conf
+lda_conf: /etc/dovecot/conf.d/15-lda.conf
+auth_sql_conf_ext: /etc/dovecot/conf.d/auth-sql.conf.ext
+dovecot_sql_conf_ext: /etc/dovecot/dovecot-sql.conf.ext
+dovecot_conf: /etc/dovecot/dovecot.conf
+
+path_download_roundcube: /root 
+path_roundcube: /var/www/html/webmail
+config_inc_php: /var/www/html/webmail/config/config.inc.php
+destin_folder_import_db_roundcubemail: /var/www/html/webmail/SQL/mysql.initial.sql
+
+roundcube_packages:
+  - php-pear 
+  - php-intl 
+  - php-ldap 
+  - php-net-smtp 
+  - php-gd 
+  - php-imagick 
+  - php-zip
+
+path_php_ini: /etc/php/7.4/fpm/php.ini
+path_nginx_conf: /etc/nginx/nginx.conf

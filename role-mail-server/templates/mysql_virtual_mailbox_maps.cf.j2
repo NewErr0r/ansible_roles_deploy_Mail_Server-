@@ -1,0 +1,5 @@
+user = {{ user_database }}
+password = {{ pass_user_database }}
+hosts = localhost
+dbname = {{ name_database }}
+query = SELECT CONCAT(domain,'/',maildir) FROM mailbox WHERE username='%s' AND active = '1'

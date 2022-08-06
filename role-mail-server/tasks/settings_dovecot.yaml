@@ -1,0 +1,51 @@
+- name: Installing Dovecot with a component for working with DBMS
+  apt:
+    name: "{{ packages_dovecot }}"
+    state: latest 
+    update_cache: yes 
+
+- name: Setting up a way to store messages
+  copy: 
+    src: 10-mail.conf
+    dest: "{{ mail_conf }}"
+
+- name: Setting up a listener for authentication
+  copy: 
+    src: 10-master.conf
+    dest: "{{ master_conf }}"
+
+- name: Setting up authentication in Dovecot
+  copy:
+    src: 10-auth.conf
+    dest: "{{ auth_conf }}"
+
+- name: Setting up the use of encryption
+  copy:
+    src: 10-ssl.conf
+    dest: "{{ ssl_conf }}"
+
+- name: We will set up automatic creation of directories when the user connects to the mailbox for the first time
+  copy:
+    src: 15-lda.conf
+    dest: "{{ lda_conf }}"
+
+- name: Setting up a connection to our database
+  copy:
+    src: auth-sql.conf.ext
+    dest: "{{ auth_sql_conf_ext }}"
+
+- name: Let's open the file with the settings for working with mysql for editing
+  template:
+    src: dovecot-sql.conf.ext.j2
+    dest: "{{ dovecot_sql_conf_ext }}"
+
+- name: Setting up the interface on which dovecot will listen
+  copy:
+    src: dovecot.conf
+    dest: "{{ dovecot_conf }}"
+  notify:
+    - Restart Dovecot
+
+- debug: 
+    msg:
+      - "open the browser 'http://{{ ansible_ssh_host }}/postfixadmin/public/' "

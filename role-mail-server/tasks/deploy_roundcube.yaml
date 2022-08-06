@@ -1,0 +1,81 @@
+- name: Download Roundcube
+  get_url:
+    url: "{{ download_roundcube }}"
+    dest: "{{ path_download_roundcube }}"
+
+- name: Creating a directory where the files will be placed Roundcube
+  file:
+    path: "{{ path_roundcube }}"
+    state: directory
+    recurse: yes
+
+#- name: Unpacking the downloaded archive
+#  shell: |
+#    tar -C {{ path_roundcube }} -xvf {{ path_download_roundcube }}/roundcubemail-*.tar.gz --strip-components 1
+
+- name: Copying the config template "config.inc.php"
+  template:
+    src: config.inc.php.j2
+    dest: "{{ config_inc_php }}"
+
+- name: Setting the owner to the portal folder
+  file:
+    path: "{{ path_roundcube }}"
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+
+- name: Creating a database for roundcubemail in MariaDB
+  community.mysql.mysql_db:
+    name: "{{ roundcube_database }}"
+    encoding: utf8
+    collation: utf8_bin
+    login_user: root 
+    login_password: "{{ root_pass }}"
+  failed_when: false 
+
+- name: Creating a user for roundcubemail in MariaDB
+  community.mysql.mysql_user:
+    name: "{{ roundcube_user }}"
+    password: "{{ roundcube_user_pass }}"
+    priv: '*.*:ALL,GRANT'
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ root_pass }}"
+
+- name: Upload to the created database
+  community.mysql.mysql_db:
+    name: "{{ roundcube_database }}"
+    encoding: utf8
+    collation: utf8_bin
+    target: "{{ destin_folder_import_db_roundcubemail }}"
+    state: import
+    login_user: root
+    login_password: "{{ root_pass }}"
+  failed_when: false 
+
+- name: Installing the components necessary for Roundcube operation
+  apt: 
+    name: "{{ roundcube_packages }}"
+    state: latest
+    update_cache: yes 
+
+- name: Setting PHP 
+  template: 
+    src: php.ini.j2
+    dest: "{{ path_php_ini }}"
+  notify: 
+    - Restart PHP-FPM
+
+- name: Setting NGINX
+  copy:
+    src: nginx.conf
+    dest: "{{ path_nginx_conf }}"
+  notify: 
+    - Restart NGINX
+
+- debug:
+    msg:
+      - "open the browser 'http://{{ ansible_ssh_host }}/webmail/installer/' "
